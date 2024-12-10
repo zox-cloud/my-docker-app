@@ -1,0 +1,34 @@
+name: CI/CD Pipeline
+
+# Trigger the workflow on a push to the main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Job to build and push the Docker image
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the repository code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Log in to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }} # Docker Hub username
+        password: ${{ secrets.DOCKER_PASSWORD }} # Docker Hub password
+
+    # Step 3: Build and tag the Docker image
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-docker-app:latest .
+
+    # Step 4: Push the Docker image to Docker Hub
+    - name: Push Docker image
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/my-docker-app:latest
